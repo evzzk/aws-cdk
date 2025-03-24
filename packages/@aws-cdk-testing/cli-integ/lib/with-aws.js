@@ -1,0 +1,59 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.withAws = withAws;
+exports.regionPool = regionPool;
+const aws_1 = require("./aws");
+const resource_pool_1 = require("./resource-pool");
+/**
+ * Higher order function to execute a block with an AWS client setup
+ *
+ * Allocate the next region from the REGION pool and dispose it afterwards.
+ */
+function withAws(block, disableBootstrap = false) {
+    return (context) => regionPool().using(async (region) => {
+        const aws = await aws_1.AwsClients.forRegion(region, context.output);
+        await sanityCheck(aws);
+        return block({ ...context, disableBootstrap, aws });
+    });
+}
+let _regionPool;
+function regionPool() {
+    if (_regionPool !== undefined) {
+        return _regionPool;
+    }
+    const REGIONS = process.env.AWS_REGIONS
+        ? process.env.AWS_REGIONS.split(',')
+        : [process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1'];
+    // eslint-disable-next-line no-console
+    console.log(`Using regions: ${REGIONS}\n`);
+    _regionPool = resource_pool_1.ResourcePool.withResources('aws_regions', REGIONS);
+    return _regionPool;
+}
+/**
+ * Perform a one-time quick sanity check that the AWS clients have properly configured credentials
+ *
+ * If we don't do this, calls are going to fail and they'll be retried and everything will take
+ * forever before the user notices a simple misconfiguration.
+ *
+ * We can't check for the presence of environment variables since credentials could come from
+ * anywhere, so do simple account retrieval.
+ *
+ * Only do it once per process.
+ */
+async function sanityCheck(aws) {
+    if (sanityChecked === undefined) {
+        try {
+            await aws.account();
+            sanityChecked = true;
+        }
+        catch (e) {
+            sanityChecked = false;
+            throw new Error(`AWS credentials probably not configured, got error: ${e.message}`);
+        }
+    }
+    if (!sanityChecked) {
+        throw new Error('AWS credentials probably not configured, see previous error');
+    }
+}
+let sanityChecked;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoid2l0aC1hd3MuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJ3aXRoLWF3cy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQVlBLDBCQVVDO0FBR0QsZ0NBY0M7QUF2Q0QsK0JBQW1DO0FBRW5DLG1EQUErQztBQUsvQzs7OztHQUlHO0FBQ0gsU0FBZ0IsT0FBTyxDQUNyQixLQUEyRSxFQUMzRSxtQkFBNEIsS0FBSztJQUVqQyxPQUFPLENBQUMsT0FBVSxFQUFFLEVBQUUsQ0FBQyxVQUFVLEVBQUUsQ0FBQyxLQUFLLENBQUMsS0FBSyxFQUFFLE1BQU0sRUFBRSxFQUFFO1FBQ3pELE1BQU0sR0FBRyxHQUFHLE1BQU0sZ0JBQVUsQ0FBQyxTQUFTLENBQUMsTUFBTSxFQUFFLE9BQU8sQ0FBQyxNQUFNLENBQUMsQ0FBQztRQUMvRCxNQUFNLFdBQVcsQ0FBQyxHQUFHLENBQUMsQ0FBQztRQUV2QixPQUFPLEtBQUssQ0FBQyxFQUFFLEdBQUcsT0FBTyxFQUFFLGdCQUFnQixFQUFFLEdBQUcsRUFBRSxDQUFDLENBQUM7SUFDdEQsQ0FBQyxDQUFDLENBQUM7QUFDTCxDQUFDO0FBRUQsSUFBSSxXQUFxQyxDQUFDO0FBQzFDLFNBQWdCLFVBQVU7SUFDeEIsSUFBSSxXQUFXLEtBQUssU0FBUyxFQUFFLENBQUM7UUFDOUIsT0FBTyxXQUFXLENBQUM7SUFDckIsQ0FBQztJQUVELE1BQU0sT0FBTyxHQUFHLE9BQU8sQ0FBQyxHQUFHLENBQUMsV0FBVztRQUNyQyxDQUFDLENBQUMsT0FBTyxDQUFDLEdBQUcsQ0FBQyxXQUFXLENBQUMsS0FBSyxDQUFDLEdBQUcsQ0FBQztRQUNwQyxDQUFDLENBQUMsQ0FBQyxPQUFPLENBQUMsR0FBRyxDQUFDLFVBQVUsSUFBSSxPQUFPLENBQUMsR0FBRyxDQUFDLGtCQUFrQixJQUFJLFdBQVcsQ0FBQyxDQUFDO0lBRTlFLHNDQUFzQztJQUN0QyxPQUFPLENBQUMsR0FBRyxDQUFDLGtCQUFrQixPQUFPLElBQUksQ0FBQyxDQUFDO0lBRTNDLFdBQVcsR0FBRyw0QkFBWSxDQUFDLGFBQWEsQ0FBQyxhQUFhLEVBQUUsT0FBTyxDQUFDLENBQUM7SUFDakUsT0FBTyxXQUFXLENBQUM7QUFDckIsQ0FBQztBQUVEOzs7Ozs7Ozs7O0dBVUc7QUFDSCxLQUFLLFVBQVUsV0FBVyxDQUFDLEdBQWU7SUFDeEMsSUFBSSxhQUFhLEtBQUssU0FBUyxFQUFFLENBQUM7UUFDaEMsSUFBSSxDQUFDO1lBQ0gsTUFBTSxHQUFHLENBQUMsT0FBTyxFQUFFLENBQUM7WUFDcEIsYUFBYSxHQUFHLElBQUksQ0FBQztRQUN2QixDQUFDO1FBQUMsT0FBTyxDQUFNLEVBQUUsQ0FBQztZQUNoQixhQUFhLEdBQUcsS0FBSyxDQUFDO1lBQ3RCLE1BQU0sSUFBSSxLQUFLLENBQUMsdURBQXVELENBQUMsQ0FBQyxPQUFPLEVBQUUsQ0FBQyxDQUFDO1FBQ3RGLENBQUM7SUFDSCxDQUFDO0lBQ0QsSUFBSSxDQUFDLGFBQWEsRUFBRSxDQUFDO1FBQ25CLE1BQU0sSUFBSSxLQUFLLENBQUMsNkRBQTZELENBQUMsQ0FBQztJQUNqRixDQUFDO0FBQ0gsQ0FBQztBQUNELElBQUksYUFBa0MsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IEF3c0NsaWVudHMgfSBmcm9tICcuL2F3cyc7XG5pbXBvcnQgeyBUZXN0Q29udGV4dCB9IGZyb20gJy4vaW50ZWctdGVzdCc7XG5pbXBvcnQgeyBSZXNvdXJjZVBvb2wgfSBmcm9tICcuL3Jlc291cmNlLXBvb2wnO1xuaW1wb3J0IHsgRGlzYWJsZUJvb3RzdHJhcENvbnRleHQgfSBmcm9tICcuL3dpdGgtY2RrLWFwcCc7XG5cbmV4cG9ydCB0eXBlIEF3c0NvbnRleHQgPSB7IHJlYWRvbmx5IGF3czogQXdzQ2xpZW50cyB9O1xuXG4vKipcbiAqIEhpZ2hlciBvcmRlciBmdW5jdGlvbiB0byBleGVjdXRlIGEgYmxvY2sgd2l0aCBhbiBBV1MgY2xpZW50IHNldHVwXG4gKlxuICogQWxsb2NhdGUgdGhlIG5leHQgcmVnaW9uIGZyb20gdGhlIFJFR0lPTiBwb29sIGFuZCBkaXNwb3NlIGl0IGFmdGVyd2FyZHMuXG4gKi9cbmV4cG9ydCBmdW5jdGlvbiB3aXRoQXdzPEEgZXh0ZW5kcyBUZXN0Q29udGV4dD4oXG4gIGJsb2NrOiAoY29udGV4dDogQSAmIEF3c0NvbnRleHQgJiBEaXNhYmxlQm9vdHN0cmFwQ29udGV4dCkgPT4gUHJvbWlzZTx2b2lkPixcbiAgZGlzYWJsZUJvb3RzdHJhcDogYm9vbGVhbiA9IGZhbHNlLFxuKTogKGNvbnRleHQ6IEEpID0+IFByb21pc2U8dm9pZD4ge1xuICByZXR1cm4gKGNvbnRleHQ6IEEpID0+IHJlZ2lvblBvb2woKS51c2luZyhhc3luYyAocmVnaW9uKSA9PiB7XG4gICAgY29uc3QgYXdzID0gYXdhaXQgQXdzQ2xpZW50cy5mb3JSZWdpb24ocmVnaW9uLCBjb250ZXh0Lm91dHB1dCk7XG4gICAgYXdhaXQgc2FuaXR5Q2hlY2soYXdzKTtcblxuICAgIHJldHVybiBibG9jayh7IC4uLmNvbnRleHQsIGRpc2FibGVCb290c3RyYXAsIGF3cyB9KTtcbiAgfSk7XG59XG5cbmxldCBfcmVnaW9uUG9vbDogdW5kZWZpbmVkIHwgUmVzb3VyY2VQb29sO1xuZXhwb3J0IGZ1bmN0aW9uIHJlZ2lvblBvb2woKTogUmVzb3VyY2VQb29sIHtcbiAgaWYgKF9yZWdpb25Qb29sICE9PSB1bmRlZmluZWQpIHtcbiAgICByZXR1cm4gX3JlZ2lvblBvb2w7XG4gIH1cblxuICBjb25zdCBSRUdJT05TID0gcHJvY2Vzcy5lbnYuQVdTX1JFR0lPTlNcbiAgICA/IHByb2Nlc3MuZW52LkFXU19SRUdJT05TLnNwbGl0KCcsJylcbiAgICA6IFtwcm9jZXNzLmVudi5BV1NfUkVHSU9OID8/IHByb2Nlc3MuZW52LkFXU19ERUZBVUxUX1JFR0lPTiA/PyAndXMtZWFzdC0xJ107XG5cbiAgLy8gZXNsaW50LWRpc2FibGUtbmV4dC1saW5lIG5vLWNvbnNvbGVcbiAgY29uc29sZS5sb2coYFVzaW5nIHJlZ2lvbnM6ICR7UkVHSU9OU31cXG5gKTtcblxuICBfcmVnaW9uUG9vbCA9IFJlc291cmNlUG9vbC53aXRoUmVzb3VyY2VzKCdhd3NfcmVnaW9ucycsIFJFR0lPTlMpO1xuICByZXR1cm4gX3JlZ2lvblBvb2w7XG59XG5cbi8qKlxuICogUGVyZm9ybSBhIG9uZS10aW1lIHF1aWNrIHNhbml0eSBjaGVjayB0aGF0IHRoZSBBV1MgY2xpZW50cyBoYXZlIHByb3Blcmx5IGNvbmZpZ3VyZWQgY3JlZGVudGlhbHNcbiAqXG4gKiBJZiB3ZSBkb24ndCBkbyB0aGlzLCBjYWxscyBhcmUgZ29pbmcgdG8gZmFpbCBhbmQgdGhleSdsbCBiZSByZXRyaWVkIGFuZCBldmVyeXRoaW5nIHdpbGwgdGFrZVxuICogZm9yZXZlciBiZWZvcmUgdGhlIHVzZXIgbm90aWNlcyBhIHNpbXBsZSBtaXNjb25maWd1cmF0aW9uLlxuICpcbiAqIFdlIGNhbid0IGNoZWNrIGZvciB0aGUgcHJlc2VuY2Ugb2YgZW52aXJvbm1lbnQgdmFyaWFibGVzIHNpbmNlIGNyZWRlbnRpYWxzIGNvdWxkIGNvbWUgZnJvbVxuICogYW55d2hlcmUsIHNvIGRvIHNpbXBsZSBhY2NvdW50IHJldHJpZXZhbC5cbiAqXG4gKiBPbmx5IGRvIGl0IG9uY2UgcGVyIHByb2Nlc3MuXG4gKi9cbmFzeW5jIGZ1bmN0aW9uIHNhbml0eUNoZWNrKGF3czogQXdzQ2xpZW50cykge1xuICBpZiAoc2FuaXR5Q2hlY2tlZCA9PT0gdW5kZWZpbmVkKSB7XG4gICAgdHJ5IHtcbiAgICAgIGF3YWl0IGF3cy5hY2NvdW50KCk7XG4gICAgICBzYW5pdHlDaGVja2VkID0gdHJ1ZTtcbiAgICB9IGNhdGNoIChlOiBhbnkpIHtcbiAgICAgIHNhbml0eUNoZWNrZWQgPSBmYWxzZTtcbiAgICAgIHRocm93IG5ldyBFcnJvcihgQVdTIGNyZWRlbnRpYWxzIHByb2JhYmx5IG5vdCBjb25maWd1cmVkLCBnb3QgZXJyb3I6ICR7ZS5tZXNzYWdlfWApO1xuICAgIH1cbiAgfVxuICBpZiAoIXNhbml0eUNoZWNrZWQpIHtcbiAgICB0aHJvdyBuZXcgRXJyb3IoJ0FXUyBjcmVkZW50aWFscyBwcm9iYWJseSBub3QgY29uZmlndXJlZCwgc2VlIHByZXZpb3VzIGVycm9yJyk7XG4gIH1cbn1cbmxldCBzYW5pdHlDaGVja2VkOiBib29sZWFuIHwgdW5kZWZpbmVkO1xuIl19

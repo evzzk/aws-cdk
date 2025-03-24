@@ -1,0 +1,39 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = require("fs");
+const path = require("path");
+const with_tool_context_1 = require("./with-tool-context");
+const lib_1 = require("../../lib");
+const TIMEOUT = 1800000;
+(0, lib_1.integTest)('amplify integration', (0, with_tool_context_1.withToolContext)(async (context) => {
+    const shell = lib_1.ShellHelper.fromContext(context);
+    await shell.shell(['npm', 'create', '-y', 'amplify@latest']);
+    await shell.shell(['npx', 'ampx', 'configure', 'telemetry', 'disable']);
+    // This will create 'package.json' implicating a certain version of the CDK
+    await updateCdkDependency(context, context.packages.requestedCliVersion(), context.packages.requestedFrameworkVersion());
+    await shell.shell(['npm', 'install']);
+    await shell.shell(['npx', 'ampx', 'sandbox', '--once'], {
+        modEnv: {
+            AWS_REGION: context.aws.region,
+        },
+    });
+    try {
+        // Future code goes here, putting the try/finally here already so it doesn't
+        // get forgotten.
+    }
+    finally {
+        await shell.shell(['npx', 'ampx', 'sandbox', 'delete', '--yes'], {
+            modEnv: {
+                AWS_REGION: context.aws.region,
+            },
+        });
+    }
+}), TIMEOUT);
+async function updateCdkDependency(context, cliVersion, libVersion) {
+    const filename = path.join(context.integTestDir, 'package.json');
+    const pj = JSON.parse(await fs_1.promises.readFile(filename, { encoding: 'utf-8' }));
+    pj.devDependencies['aws-cdk'] = cliVersion;
+    pj.devDependencies['aws-cdk-lib'] = libVersion;
+    await fs_1.promises.writeFile(filename, JSON.stringify(pj, undefined, 2), { encoding: 'utf-8' });
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYW1wbGlmeS5pbnRlZ3Rlc3QuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJhbXBsaWZ5LmludGVndGVzdC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLDJCQUFvQztBQUNwQyw2QkFBNkI7QUFDN0IsMkRBQXNEO0FBQ3RELG1DQUE4RTtBQUU5RSxNQUFNLE9BQU8sR0FBRyxPQUFRLENBQUM7QUFFekIsSUFBQSxlQUFTLEVBQUMscUJBQXFCLEVBQUUsSUFBQSxtQ0FBZSxFQUFDLEtBQUssRUFBRSxPQUFPLEVBQUUsRUFBRTtJQUNqRSxNQUFNLEtBQUssR0FBRyxpQkFBVyxDQUFDLFdBQVcsQ0FBQyxPQUFPLENBQUMsQ0FBQztJQUUvQyxNQUFNLEtBQUssQ0FBQyxLQUFLLENBQUMsQ0FBQyxLQUFLLEVBQUUsUUFBUSxFQUFFLElBQUksRUFBRSxnQkFBZ0IsQ0FBQyxDQUFDLENBQUM7SUFDN0QsTUFBTSxLQUFLLENBQUMsS0FBSyxDQUFDLENBQUMsS0FBSyxFQUFFLE1BQU0sRUFBRSxXQUFXLEVBQUUsV0FBVyxFQUFFLFNBQVMsQ0FBQyxDQUFDLENBQUM7SUFFeEUsMkVBQTJFO0lBQzNFLE1BQU0sbUJBQW1CLENBQUMsT0FBTyxFQUFFLE9BQU8sQ0FBQyxRQUFRLENBQUMsbUJBQW1CLEVBQUUsRUFBRSxPQUFPLENBQUMsUUFBUSxDQUFDLHlCQUF5QixFQUFFLENBQUMsQ0FBQztJQUN6SCxNQUFNLEtBQUssQ0FBQyxLQUFLLENBQUMsQ0FBQyxLQUFLLEVBQUUsU0FBUyxDQUFDLENBQUMsQ0FBQztJQUV0QyxNQUFNLEtBQUssQ0FBQyxLQUFLLENBQUMsQ0FBQyxLQUFLLEVBQUUsTUFBTSxFQUFFLFNBQVMsRUFBRSxRQUFRLENBQUMsRUFBRTtRQUN0RCxNQUFNLEVBQUU7WUFDTixVQUFVLEVBQUUsT0FBTyxDQUFDLEdBQUcsQ0FBQyxNQUFNO1NBQy9CO0tBQ0YsQ0FBQyxDQUFDO0lBQ0gsSUFBSSxDQUFDO1FBRUgsNEVBQTRFO1FBQzVFLGlCQUFpQjtJQUVuQixDQUFDO1lBQVMsQ0FBQztRQUNULE1BQU0sS0FBSyxDQUFDLEtBQUssQ0FBQyxDQUFDLEtBQUssRUFBRSxNQUFNLEVBQUUsU0FBUyxFQUFFLFFBQVEsRUFBRSxPQUFPLENBQUMsRUFBRTtZQUMvRCxNQUFNLEVBQUU7Z0JBQ04sVUFBVSxFQUFFLE9BQU8sQ0FBQyxHQUFHLENBQUMsTUFBTTthQUMvQjtTQUNGLENBQUMsQ0FBQztJQUNMLENBQUM7QUFDSCxDQUFDLENBQUMsRUFBRSxPQUFPLENBQUMsQ0FBQztBQUViLEtBQUssVUFBVSxtQkFBbUIsQ0FBQyxPQUFrQyxFQUFFLFVBQWtCLEVBQUUsVUFBa0I7SUFDM0csTUFBTSxRQUFRLEdBQUcsSUFBSSxDQUFDLElBQUksQ0FBQyxPQUFPLENBQUMsWUFBWSxFQUFFLGNBQWMsQ0FBQyxDQUFDO0lBQ2pFLE1BQU0sRUFBRSxHQUFHLElBQUksQ0FBQyxLQUFLLENBQUMsTUFBTSxhQUFFLENBQUMsUUFBUSxDQUFDLFFBQVEsRUFBRSxFQUFFLFFBQVEsRUFBRSxPQUFPLEVBQUUsQ0FBQyxDQUFDLENBQUM7SUFDMUUsRUFBRSxDQUFDLGVBQWUsQ0FBQyxTQUFTLENBQUMsR0FBRyxVQUFVLENBQUM7SUFDM0MsRUFBRSxDQUFDLGVBQWUsQ0FBQyxhQUFhLENBQUMsR0FBRyxVQUFVLENBQUM7SUFDL0MsTUFBTSxhQUFFLENBQUMsU0FBUyxDQUFDLFFBQVEsRUFBRSxJQUFJLENBQUMsU0FBUyxDQUFDLEVBQUUsRUFBRSxTQUFTLEVBQUUsQ0FBQyxDQUFDLEVBQUUsRUFBRSxRQUFRLEVBQUUsT0FBTyxFQUFFLENBQUMsQ0FBQztBQUN4RixDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgcHJvbWlzZXMgYXMgZnMgfSBmcm9tICdmcyc7XG5pbXBvcnQgKiBhcyBwYXRoIGZyb20gJ3BhdGgnO1xuaW1wb3J0IHsgd2l0aFRvb2xDb250ZXh0IH0gZnJvbSAnLi93aXRoLXRvb2wtY29udGV4dCc7XG5pbXBvcnQgeyBpbnRlZ1Rlc3QsIFNoZWxsSGVscGVyLCBUZW1wb3JhcnlEaXJlY3RvcnlDb250ZXh0IH0gZnJvbSAnLi4vLi4vbGliJztcblxuY29uc3QgVElNRU9VVCA9IDE4MDBfMDAwO1xuXG5pbnRlZ1Rlc3QoJ2FtcGxpZnkgaW50ZWdyYXRpb24nLCB3aXRoVG9vbENvbnRleHQoYXN5bmMgKGNvbnRleHQpID0+IHtcbiAgY29uc3Qgc2hlbGwgPSBTaGVsbEhlbHBlci5mcm9tQ29udGV4dChjb250ZXh0KTtcblxuICBhd2FpdCBzaGVsbC5zaGVsbChbJ25wbScsICdjcmVhdGUnLCAnLXknLCAnYW1wbGlmeUBsYXRlc3QnXSk7XG4gIGF3YWl0IHNoZWxsLnNoZWxsKFsnbnB4JywgJ2FtcHgnLCAnY29uZmlndXJlJywgJ3RlbGVtZXRyeScsICdkaXNhYmxlJ10pO1xuXG4gIC8vIFRoaXMgd2lsbCBjcmVhdGUgJ3BhY2thZ2UuanNvbicgaW1wbGljYXRpbmcgYSBjZXJ0YWluIHZlcnNpb24gb2YgdGhlIENES1xuICBhd2FpdCB1cGRhdGVDZGtEZXBlbmRlbmN5KGNvbnRleHQsIGNvbnRleHQucGFja2FnZXMucmVxdWVzdGVkQ2xpVmVyc2lvbigpLCBjb250ZXh0LnBhY2thZ2VzLnJlcXVlc3RlZEZyYW1ld29ya1ZlcnNpb24oKSk7XG4gIGF3YWl0IHNoZWxsLnNoZWxsKFsnbnBtJywgJ2luc3RhbGwnXSk7XG5cbiAgYXdhaXQgc2hlbGwuc2hlbGwoWyducHgnLCAnYW1weCcsICdzYW5kYm94JywgJy0tb25jZSddLCB7XG4gICAgbW9kRW52OiB7XG4gICAgICBBV1NfUkVHSU9OOiBjb250ZXh0LmF3cy5yZWdpb24sXG4gICAgfSxcbiAgfSk7XG4gIHRyeSB7XG5cbiAgICAvLyBGdXR1cmUgY29kZSBnb2VzIGhlcmUsIHB1dHRpbmcgdGhlIHRyeS9maW5hbGx5IGhlcmUgYWxyZWFkeSBzbyBpdCBkb2Vzbid0XG4gICAgLy8gZ2V0IGZvcmdvdHRlbi5cblxuICB9IGZpbmFsbHkge1xuICAgIGF3YWl0IHNoZWxsLnNoZWxsKFsnbnB4JywgJ2FtcHgnLCAnc2FuZGJveCcsICdkZWxldGUnLCAnLS15ZXMnXSwge1xuICAgICAgbW9kRW52OiB7XG4gICAgICAgIEFXU19SRUdJT046IGNvbnRleHQuYXdzLnJlZ2lvbixcbiAgICAgIH0sXG4gICAgfSk7XG4gIH1cbn0pLCBUSU1FT1VUKTtcblxuYXN5bmMgZnVuY3Rpb24gdXBkYXRlQ2RrRGVwZW5kZW5jeShjb250ZXh0OiBUZW1wb3JhcnlEaXJlY3RvcnlDb250ZXh0LCBjbGlWZXJzaW9uOiBzdHJpbmcsIGxpYlZlcnNpb246IHN0cmluZykge1xuICBjb25zdCBmaWxlbmFtZSA9IHBhdGguam9pbihjb250ZXh0LmludGVnVGVzdERpciwgJ3BhY2thZ2UuanNvbicpO1xuICBjb25zdCBwaiA9IEpTT04ucGFyc2UoYXdhaXQgZnMucmVhZEZpbGUoZmlsZW5hbWUsIHsgZW5jb2Rpbmc6ICd1dGYtOCcgfSkpO1xuICBwai5kZXZEZXBlbmRlbmNpZXNbJ2F3cy1jZGsnXSA9IGNsaVZlcnNpb247XG4gIHBqLmRldkRlcGVuZGVuY2llc1snYXdzLWNkay1saWInXSA9IGxpYlZlcnNpb247XG4gIGF3YWl0IGZzLndyaXRlRmlsZShmaWxlbmFtZSwgSlNPTi5zdHJpbmdpZnkocGosIHVuZGVmaW5lZCwgMiksIHsgZW5jb2Rpbmc6ICd1dGYtOCcgfSk7XG59XG4iXX0=

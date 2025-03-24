@@ -1,0 +1,3 @@
+"use strict";
+/// !cdk-integ test-stack
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoieHh4eHgudGVzdC13aXRoLW5ldy1hc3NldHMtZGlmZi5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInh4eHh4LnRlc3Qtd2l0aC1uZXctYXNzZXRzLWRpZmYudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBLHlCQUF5QiIsInNvdXJjZXNDb250ZW50IjpbIi8vLyAhY2RrLWludGVnIHRlc3Qtc3RhY2tcbiJdfQ==

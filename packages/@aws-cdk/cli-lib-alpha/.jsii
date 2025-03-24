@@ -1,0 +1,1903 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "description": "AWS CDK Programmatic CLI library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "5.5.8 (build 06b640f)",
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/cli-lib-alpha",
+  "readme": {
+    "markdown": "# AWS CDK CLI Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)\n\n> The APIs of higher level constructs in this module are experimental and under active development.\n> They are subject to non-backward compatible changes or removal in any future version. These are\n> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be\n> announced in the release notes. This means that while you may use them, you may need to update\n> your source code when upgrading to a newer version of this package.\n\n---\n\n<!--END STABILITY BANNER-->\n\n## ⚠️ Experimental module\n\nThis package is highly experimental. Expect frequent API changes and incomplete features.\nKnown issues include:\n\n- **JavaScript/TypeScript only**\\\n  The jsii packages are currently not in a working state.\n- **No useful return values**\\\n  All output is currently printed to stdout/stderr\n- **Missing or Broken options**\\\n  Some CLI options might not be available in this package or broken\n\n## Overview\n\nProvides a library to interact with the AWS CDK CLI programmatically from jsii supported languages.\nCurrently the package includes implementations for:\n\n- `cdk deploy`\n- `cdk synth`\n- `cdk bootstrap`\n- `cdk destroy`\n- `cdk list`\n\n## Setup\n\n### AWS CDK app directory\n\nObtain an `AwsCdkCli` class from an AWS CDK app directory (containing a `cdk.json` file):\n\n```ts fixture=imports\nconst cli = AwsCdkCli.fromCdkAppDirectory(\"/path/to/cdk/app\");\n```\n\n### Cloud Assembly Directory Producer\n\nYou can also create `AwsCdkCli` from a class implementing `ICloudAssemblyDirectoryProducer`.\nAWS CDK apps might need to be synthesized multiple times with additional context values before they are ready.\n\nThe `produce()` method of the `ICloudAssemblyDirectoryProducer` interface provides this multi-pass ability.\nIt is invoked with the context values of the current iteration and should use these values to synthesize a Cloud Assembly.\nThe return value is the path to the assembly directory.\n\nA basic implementation would look like this:\n\n```ts fixture=imports\nclass MyProducer implements ICloudAssemblyDirectoryProducer {\n  async produce(context: Record<string, any>) {\n    const app = new cdk.App({ context });\n    const stack = new cdk.Stack(app);\n    return app.synth().directory;\n  }\n}\n```\n\nFor all features (e.g. lookups) to work correctly, `cdk.App()` must be instantiated with the received `context` values.\nSince it is not possible to update the context of an app, it must be created as part of the `produce()` method.\n\nThe producer can than be used like this:\n\n```ts fixture=producer\nconst cli = AwsCdkCli.fromCloudAssemblyDirectoryProducer(new MyProducer());\n```\n\n## Commands\n\n### list\n\n```ts\n// await this asynchronous method call using a language feature\ncli.list();\n```\n\n### synth\n\n```ts\n// await this asynchronous method call using a language feature\ncli.synth({\n  stacks: ['MyTestStack'],\n});\n```\n\n### bootstrap\n\n```ts\n// await this asynchronous method call using a language feature\ncli.bootstrap();\n```\n\n### deploy\n\n```ts\n// await this asynchronous method call using a language feature\ncli.deploy({\n  stacks: ['MyTestStack'],\n});\n```\n\n### destroy\n\n```ts\n// await this asynchronous method call using a language feature\ncli.destroy({\n  stacks: ['MyTestStack'],\n});\n```\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/cli-lib-alpha",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.Cli.Lib.Alpha",
+      "packageId": "Amazon.CDK.Cli.Lib.Alpha"
+    },
+    "go": {
+      "moduleName": "github.com/aws/aws-cdk-go",
+      "packageName": "awscdkclilibalpha"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cdk-cli-lib-alpha",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.cli.lib.alpha"
+    },
+    "js": {
+      "npm": "@aws-cdk/cli-lib-alpha"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.cli-lib-alpha",
+      "module": "aws_cdk.cli_lib_alpha"
+    }
+  },
+  "types": {
+    "@aws-cdk/cli-lib-alpha.AwsCdkCli": {
+      "assembly": "@aws-cdk/cli-lib-alpha",
+      "docs": {
+        "stability": "experimental",
+        "summary": "Provides a programmatic interface for interacting with the AWS CDK CLI."
+      },
+      "fqn": "@aws-cdk/cli-lib-alpha.AwsCdkCli",
+      "interfaces": [
+        "@aws-cdk/cli-lib-alpha.IAwsCdkCli"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cli.ts",
+        "line": 96
+      },
+      "methods": [
+        {
+          "docs": {
+            "returns": "an instance of `AwsCdkCli`",
+            "stability": "experimental",
+            "summary": "Create the CLI from a directory containing an AWS CDK app."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 103
+          },
+          "name": "fromCdkAppDirectory",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Defaults to the current working directory.",
+                "summary": "the directory of the AWS CDK app."
+              },
+              "name": "directory",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "additional configuration properties."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/cli-lib-alpha.CdkAppDirectoryProps"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cli-lib-alpha.AwsCdkCli"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "Create the CLI from a CloudAssemblyDirectoryProducer."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 122
+          },
+          "name": "fromCloudAssemblyDirectoryProducer",
+          "parameters": [
+            {
+              "name": "producer",
+              "type": {
+                "fqn": "@aws-cdk/cli-lib-alpha.ICloudAssemblyDirectoryProducer"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cli-lib-alpha.AwsCdkCli"
+            }
+          },
+          "static": true
+        },
+        {
+          "async": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "cdk bootstrap."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 174
+          },
+          "name": "bootstrap",
+          "overrides": "@aws-cdk/cli-lib-alpha.IAwsCdkCli",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/cli-lib-alpha.BootstrapOptions"
+              }
+            }
+          ]
+        },
+        {
+          "async": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "cdk deploy."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 204
+          },
+          "name": "deploy",
+          "overrides": "@aws-cdk/cli-lib-alpha.IAwsCdkCli",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/cli-lib-alpha.DeployOptions"
+              }
+            }
+          ]
+        },
+        {
+          "async": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "cdk destroy."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 234
+          },
+          "name": "destroy",
+          "overrides": "@aws-cdk/cli-lib-alpha.IAwsCdkCli",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/cli-lib-alpha.DestroyOptions"
+              }
+            }
+          ]
+        },
+        {
+          "async": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "cdk list."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 148
+          },
+          "name": "list",
+          "overrides": "@aws-cdk/cli-lib-alpha.IAwsCdkCli",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/cli-lib-alpha.ListOptions"
+              }
+            }
+          ]
+        },
+        {
+          "async": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "cdk synth."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 160
+          },
+          "name": "synth",
+          "overrides": "@aws-cdk/cli-lib-alpha.IAwsCdkCli",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/cli-lib-alpha.SynthOptions"
+              }
+            }
+          ]
+        }
+      ],
+      "name": "AwsCdkCli",
+      "symbolId": "lib/cli:AwsCdkCli"
+    },
+    "@aws-cdk/cli-lib-alpha.BootstrapOptions": {
+      "assembly": "@aws-cdk/cli-lib-alpha",
+      "datatype": true,
+      "docs": {
+        "stability": "experimental",
+        "summary": "Options to use with cdk bootstrap."
+      },
+      "fqn": "@aws-cdk/cli-lib-alpha.BootstrapOptions",
+      "interfaces": [
+        "@aws-cdk/cli-lib-alpha.SharedOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/commands/bootstrap.ts",
+        "line": 6
+      },
+      "name": "BootstrapOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- auto-generated CloudFormation name",
+            "remarks": "bucket will be created and\nmust not exist",
+            "stability": "experimental",
+            "summary": "The name of the CDK toolkit bucket;"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 26
+          },
+          "name": "bootstrapBucketName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "undefined",
+            "stability": "experimental",
+            "summary": "Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 123
+          },
+          "name": "bootstrapCustomerKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "undefined",
+            "stability": "experimental",
+            "summary": "AWS KMS master key ID used for the SSE-KMS encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 115
+          },
+          "name": "bootstrapKmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- none",
+            "stability": "experimental",
+            "summary": "The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 39
+          },
+          "name": "cfnExecutionPolicy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "undefined",
+            "stability": "experimental",
+            "summary": "Use the permissions boundary specified by name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 71
+          },
+          "name": "customPermissionsBoundary",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Bootstrap all environments referenced in the CDK app or determine an environment from local configuration.",
+            "example": "\"aws://123456789012/us-east-1\"",
+            "remarks": "Uses the following format: `aws://<account-id>/<region>`",
+            "stability": "experimental",
+            "summary": "The target AWS environments to deploy the bootstrap stack to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 14
+          },
+          "name": "environments",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "undefined",
+            "stability": "experimental",
+            "summary": "Use the example permissions boundary."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 65
+          },
+          "name": "examplePermissionsBoundary",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "experimental",
+            "summary": "Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 85
+          },
+          "name": "execute",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Always bootstrap even if it would downgrade template version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 32
+          },
+          "name": "force",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "undefined",
+            "stability": "experimental",
+            "summary": "Block public access configuration on CDK toolkit bucket (enabled by default)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 130
+          },
+          "name": "publicAccessBlockConfiguration",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "undefined",
+            "remarks": "You\nmust configure it on your CDK app if you change this\nfrom the default.",
+            "stability": "experimental",
+            "summary": "String which must be unique for each bootstrap stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 93
+          },
+          "name": "qualifier",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Instead of actual bootstrapping, print the current CLI\\'s bootstrapping template to stdout for customization."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 46
+          },
+          "name": "showTemplate",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "Use the template from the given file instead of the built-in one (use --show-template to obtain an example)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 52
+          },
+          "name": "template",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Toggle CloudFormation termination protection on the bootstrap stacks."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 59
+          },
+          "name": "terminationProtection",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "The name of the CDK toolkit stack to create."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 19
+          },
+          "name": "toolkitStackName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "undefined",
+            "stability": "experimental",
+            "summary": "The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 101
+          },
+          "name": "trust",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "undefined",
+            "stability": "experimental",
+            "summary": "The AWS account IDs that should be trusted to look up values in this environment (may be repeated, modern bootstrapping only)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 109
+          },
+          "name": "trustForLookup",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "experimental",
+            "summary": "Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/bootstrap.ts",
+            "line": 78
+          },
+          "name": "usePreviousParameters",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/commands/bootstrap:BootstrapOptions"
+    },
+    "@aws-cdk/cli-lib-alpha.CdkAppDirectoryProps": {
+      "assembly": "@aws-cdk/cli-lib-alpha",
+      "datatype": true,
+      "docs": {
+        "stability": "experimental",
+        "summary": "Configuration for creating a CLI from an AWS CDK App directory."
+      },
+      "fqn": "@aws-cdk/cli-lib-alpha.CdkAppDirectoryProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cli.ts",
+        "line": 40
+      },
+      "name": "CdkAppDirectoryProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- read from cdk.json",
+            "stability": "experimental",
+            "summary": "Command-line for executing your app or a cloud assembly directory e.g. \"node bin/my-app.js\" or \"cdk.out\"."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 49
+          },
+          "name": "app",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "cdk.out",
+            "stability": "experimental",
+            "summary": "Emits the synthesized cloud assembly into a directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 56
+          },
+          "name": "output",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cli:CdkAppDirectoryProps"
+    },
+    "@aws-cdk/cli-lib-alpha.DeployOptions": {
+      "assembly": "@aws-cdk/cli-lib-alpha",
+      "datatype": true,
+      "docs": {
+        "stability": "experimental",
+        "summary": "Options to use with cdk deploy."
+      },
+      "fqn": "@aws-cdk/cli-lib-alpha.DeployOptions",
+      "interfaces": [
+        "@aws-cdk/cli-lib-alpha.SharedOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/commands/deploy.ts",
+        "line": 23
+      },
+      "name": "DeployOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Whether to build/publish assets in parallel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 147
+          },
+          "name": "assetParallelism",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "experimental",
+            "summary": "Whether to build all assets before deploying the first stack (useful for failing Docker builds)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 154
+          },
+          "name": "assetPrebuild",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- auto generate a name",
+            "remarks": "If not provided, a name will be generated automatically.",
+            "stability": "experimental",
+            "summary": "Optional name to use for the CloudFormation change set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 51
+          },
+          "name": "changeSetName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- `false` unless the environment variable `CI` is set",
+            "stability": "experimental",
+            "summary": "Whether we are on a CI system."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 123
+          },
+          "name": "ci",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "1",
+            "stability": "experimental",
+            "summary": "Maximum number of simultaneous deployments (dependency permitting) to execute."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 140
+          },
+          "name": "concurrency",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Only perform action on the given stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 29
+          },
+          "name": "exclusively",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "experimental",
+            "summary": "Whether to execute the ChangeSet Not providing `execute` parameter will result in execution of ChangeSet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 86
+          },
+          "name": "execute",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Always deploy, even if templates are identical."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 58
+          },
+          "name": "force",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 95
+          },
+          "name": "hotswap",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cli-lib-alpha.HotswapMode"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no notifications",
+            "stability": "experimental",
+            "summary": "ARNs of SNS topics that CloudFormation will notify with stack related events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 72
+          },
+          "name": "notificationArns",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Outputs are not written to any file",
+            "stability": "experimental",
+            "summary": "Path to file where stack outputs will be written after a successful deploy as JSON."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 116
+          },
+          "name": "outputsFile",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "{}",
+            "stability": "experimental",
+            "summary": "Additional parameters for CloudFormation at deploy time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 101
+          },
+          "name": "parameters",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "StackActivityProgress.EVENTS",
+            "remarks": "The default in the CLI is StackActivityProgress.BAR. But since this is an API\nit makes more sense to set the default to StackActivityProgress.EVENTS",
+            "stability": "experimental",
+            "summary": "Display mode for stack activity events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 133
+          },
+          "name": "progress",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cli-lib-alpha.StackActivityProgress"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "RequireApproval.Never",
+            "stability": "experimental",
+            "summary": "What kind of security changes require approval."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 79
+          },
+          "name": "requireApproval",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cli-lib-alpha.RequireApproval"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- do not reuse assets",
+            "stability": "experimental",
+            "summary": "Reuse the assets with the given asset IDs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 43
+          },
+          "name": "reuseAssets",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "experimental",
+            "summary": "Rollback failed deployments."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 65
+          },
+          "name": "rollback",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "CDKToolkit",
+            "stability": "experimental",
+            "summary": "Name of the toolkit stack to use/deploy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 36
+          },
+          "name": "toolkitStackName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "remarks": "If not set, all parameters must be specified for every deployment.",
+            "stability": "experimental",
+            "summary": "Use previous values for unspecified parameters."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/deploy.ts",
+            "line": 110
+          },
+          "name": "usePreviousParameters",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/commands/deploy:DeployOptions"
+    },
+    "@aws-cdk/cli-lib-alpha.DestroyOptions": {
+      "assembly": "@aws-cdk/cli-lib-alpha",
+      "datatype": true,
+      "docs": {
+        "stability": "experimental",
+        "summary": "Options to use with cdk destroy."
+      },
+      "fqn": "@aws-cdk/cli-lib-alpha.DestroyOptions",
+      "interfaces": [
+        "@aws-cdk/cli-lib-alpha.SharedOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/commands/destroy.ts",
+        "line": 6
+      },
+      "name": "DestroyOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Only destroy the given stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/destroy.ts",
+            "line": 19
+          },
+          "name": "exclusively",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Should the script prompt for approval before destroying stacks."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/destroy.ts",
+            "line": 12
+          },
+          "name": "requireApproval",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/commands/destroy:DestroyOptions"
+    },
+    "@aws-cdk/cli-lib-alpha.HotswapMode": {
+      "assembly": "@aws-cdk/cli-lib-alpha",
+      "docs": {
+        "stability": "experimental"
+      },
+      "fqn": "@aws-cdk/cli-lib-alpha.HotswapMode",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/commands/deploy.ts",
+        "line": 3
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "Will fall back to CloudFormation when a non-hotswappable change is detected."
+          },
+          "name": "FALL_BACK"
+        },
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "Will not fall back to CloudFormation when a non-hotswappable change is detected."
+          },
+          "name": "HOTSWAP_ONLY"
+        },
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "Will not attempt to hotswap anything and instead go straight to CloudFormation."
+          },
+          "name": "FULL_DEPLOYMENT"
+        }
+      ],
+      "name": "HotswapMode",
+      "symbolId": "lib/commands/deploy:HotswapMode"
+    },
+    "@aws-cdk/cli-lib-alpha.IAwsCdkCli": {
+      "assembly": "@aws-cdk/cli-lib-alpha",
+      "docs": {
+        "stability": "experimental",
+        "summary": "AWS CDK CLI operations."
+      },
+      "fqn": "@aws-cdk/cli-lib-alpha.IAwsCdkCli",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cli.ts",
+        "line": 10
+      },
+      "methods": [
+        {
+          "abstract": true,
+          "async": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "cdk bootstrap."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 24
+          },
+          "name": "bootstrap",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/cli-lib-alpha.BootstrapOptions"
+              }
+            }
+          ]
+        },
+        {
+          "abstract": true,
+          "async": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "cdk deploy."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 29
+          },
+          "name": "deploy",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/cli-lib-alpha.DeployOptions"
+              }
+            }
+          ]
+        },
+        {
+          "abstract": true,
+          "async": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "cdk destroy."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 34
+          },
+          "name": "destroy",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/cli-lib-alpha.DestroyOptions"
+              }
+            }
+          ]
+        },
+        {
+          "abstract": true,
+          "async": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "cdk list."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 14
+          },
+          "name": "list",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/cli-lib-alpha.ListOptions"
+              }
+            }
+          ]
+        },
+        {
+          "abstract": true,
+          "async": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "cdk synth."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 19
+          },
+          "name": "synth",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/cli-lib-alpha.SynthOptions"
+              }
+            }
+          ]
+        }
+      ],
+      "name": "IAwsCdkCli",
+      "symbolId": "lib/cli:IAwsCdkCli"
+    },
+    "@aws-cdk/cli-lib-alpha.ICloudAssemblyDirectoryProducer": {
+      "assembly": "@aws-cdk/cli-lib-alpha",
+      "docs": {
+        "remarks": "When running the CLI from inside a directory, this is implemented by invoking the app multiple times.\nHere the `produce()` method provides this multi-pass ability.",
+        "stability": "experimental",
+        "summary": "A class returning the path to a Cloud Assembly Directory when its `produce` method is invoked with the current context  AWS CDK apps might need to be synthesized multiple times with additional context values before they are ready."
+      },
+      "fqn": "@aws-cdk/cli-lib-alpha.ICloudAssemblyDirectoryProducer",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cli.ts",
+        "line": 66
+      },
+      "methods": [
+        {
+          "abstract": true,
+          "async": true,
+          "docs": {
+            "remarks": "For all features to work correctly, `cdk.App()` must be instantiated with the received context values in the method body.\nUsually obtained similar to this:\n```ts fixture=imports\nclass MyProducer implements ICloudAssemblyDirectoryProducer {\n  async produce(context: Record<string, any>) {\n    const app = new cdk.App({ context });\n    // create stacks here\n    return app.synth().directory;\n  }\n}\n```",
+            "stability": "experimental",
+            "summary": "Synthesize a Cloud Assembly directory for a given context."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 90
+          },
+          "name": "produce",
+          "parameters": [
+            {
+              "name": "context",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        }
+      ],
+      "name": "ICloudAssemblyDirectoryProducer",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- current working directory",
+            "remarks": "This is were a `cdk.context.json` files will be written.",
+            "stability": "experimental",
+            "summary": "The working directory used to run the Cloud Assembly from."
+          },
+          "locationInModule": {
+            "filename": "lib/cli.ts",
+            "line": 73
+          },
+          "name": "workingDirectory",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cli:ICloudAssemblyDirectoryProducer"
+    },
+    "@aws-cdk/cli-lib-alpha.ListOptions": {
+      "assembly": "@aws-cdk/cli-lib-alpha",
+      "datatype": true,
+      "docs": {
+        "stability": "experimental",
+        "summary": "Options for cdk list."
+      },
+      "fqn": "@aws-cdk/cli-lib-alpha.ListOptions",
+      "interfaces": [
+        "@aws-cdk/cli-lib-alpha.SharedOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/commands/list.ts",
+        "line": 6
+      },
+      "name": "ListOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Display environment information for each stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/list.ts",
+            "line": 12
+          },
+          "name": "long",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/commands/list:ListOptions"
+    },
+    "@aws-cdk/cli-lib-alpha.RequireApproval": {
+      "assembly": "@aws-cdk/cli-lib-alpha",
+      "docs": {
+        "stability": "experimental",
+        "summary": "In what scenarios should the CLI ask for approval."
+      },
+      "fqn": "@aws-cdk/cli-lib-alpha.RequireApproval",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/commands/common.ts",
+        "line": 4
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "Never ask for approval."
+          },
+          "name": "NEVER"
+        },
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "Prompt for approval for any type  of change to the stack."
+          },
+          "name": "ANYCHANGE"
+        },
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "Only prompt for approval if there are security related changes."
+          },
+          "name": "BROADENING"
+        }
+      ],
+      "name": "RequireApproval",
+      "symbolId": "lib/commands/common:RequireApproval"
+    },
+    "@aws-cdk/cli-lib-alpha.SharedOptions": {
+      "assembly": "@aws-cdk/cli-lib-alpha",
+      "datatype": true,
+      "docs": {
+        "stability": "experimental",
+        "summary": "AWS CDK CLI options that apply to all commands."
+      },
+      "fqn": "@aws-cdk/cli-lib-alpha.SharedOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/commands/common.ts",
+        "line": 24
+      },
+      "name": "SharedOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "experimental",
+            "summary": "Include \"aws:asset:*\" CloudFormation metadata for resources that use assets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 149
+          },
+          "name": "assetMetadata",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- read from AWS_CA_BUNDLE environment variable",
+            "stability": "experimental",
+            "summary": "Path to CA certificate to use when validating HTTPS requests."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 121
+          },
+          "name": "caBundlePath",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- `true` unless the environment variable `NO_COLOR` is set",
+            "stability": "experimental",
+            "summary": "Show colors and other style from console output."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 172
+          },
+          "name": "color",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no additional context",
+            "stability": "experimental",
+            "summary": "Additional context."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 44
+          },
+          "name": "context",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "enable emission of additional debugging information, such as creation stack traces of tokens."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 98
+          },
+          "name": "debug",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- guess EC2 instance status",
+            "stability": "experimental",
+            "summary": "Force trying to fetch EC2 instance credentials."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 128
+          },
+          "name": "ec2Creds",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Ignores synthesis errors, which will likely produce an invalid output."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 75
+          },
+          "name": "ignoreErrors",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Use JSON output instead of YAML when templates are printed to STDOUT."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 83
+          },
+          "name": "json",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "remarks": "Synthesis fails if this is disabled and context lookups need\nto be performed",
+            "stability": "experimental",
+            "summary": "Perform context lookups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 68
+          },
+          "name": "lookups",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "experimental",
+            "summary": "Show relevant notices."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 165
+          },
+          "name": "notices",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "experimental",
+            "summary": "Include \"aws:cdk:path\" CloudFormation metadata for each resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 142
+          },
+          "name": "pathMetadata",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no profile is used",
+            "stability": "experimental",
+            "summary": "Use the indicated AWS profile as the default environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 105
+          },
+          "name": "profile",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no proxy",
+            "remarks": "Will read from\nHTTPS_PROXY environment if specified",
+            "stability": "experimental",
+            "summary": "Use the indicated proxy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 113
+          },
+          "name": "proxy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- use the bootstrap cfn-exec role",
+            "stability": "experimental",
+            "summary": "Role to pass to CloudFormation for deployment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 37
+          },
+          "name": "roleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- all stacks",
+            "stability": "experimental",
+            "summary": "List of stacks to deploy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 30
+          },
+          "name": "stacks",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "remarks": "Needed for local debugging the source files with SAM CLI",
+            "stability": "experimental",
+            "summary": "Copy assets to the output directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 158
+          },
+          "name": "staging",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Do not construct stacks with warnings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 58
+          },
+          "name": "strict",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Print trace for stack warnings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 51
+          },
+          "name": "trace",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "show debug logs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 90
+          },
+          "name": "verbose",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "experimental",
+            "summary": "Include \"AWS::CDK::Metadata\" resource in synthesized templates."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/common.ts",
+            "line": 135
+          },
+          "name": "versionReporting",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/commands/common:SharedOptions"
+    },
+    "@aws-cdk/cli-lib-alpha.StackActivityProgress": {
+      "assembly": "@aws-cdk/cli-lib-alpha",
+      "docs": {
+        "stability": "experimental",
+        "summary": "Supported display modes for stack deployment activity."
+      },
+      "fqn": "@aws-cdk/cli-lib-alpha.StackActivityProgress",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/commands/deploy.ts",
+        "line": 160
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "Displays a progress bar with only the events for the resource currently being deployed."
+          },
+          "name": "BAR"
+        },
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "Displays complete history with all CloudFormation stack events."
+          },
+          "name": "EVENTS"
+        }
+      ],
+      "name": "StackActivityProgress",
+      "symbolId": "lib/commands/deploy:StackActivityProgress"
+    },
+    "@aws-cdk/cli-lib-alpha.SynthOptions": {
+      "assembly": "@aws-cdk/cli-lib-alpha",
+      "datatype": true,
+      "docs": {
+        "stability": "experimental",
+        "summary": "Options to use with cdk synth."
+      },
+      "fqn": "@aws-cdk/cli-lib-alpha.SynthOptions",
+      "interfaces": [
+        "@aws-cdk/cli-lib-alpha.SharedOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/commands/synth.ts",
+        "line": 6
+      },
+      "name": "SynthOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "Only synthesize the given stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/synth.ts",
+            "line": 27
+          },
+          "name": "exclusively",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false;",
+            "stability": "experimental",
+            "summary": "Do not output CloudFormation Template to stdout."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/synth.ts",
+            "line": 20
+          },
+          "name": "quiet",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true;",
+            "stability": "experimental",
+            "summary": "After synthesis, validate stacks with the \"validateOnSynth\" attribute set (can also be controlled with CDK_VALIDATION)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/commands/synth.ts",
+            "line": 14
+          },
+          "name": "validation",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/commands/synth:SynthOptions"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "ej34PdsnuOhA9pO0Ol+C+OfZoCQ0Rb/WIAG0EbrDXoE="
+}

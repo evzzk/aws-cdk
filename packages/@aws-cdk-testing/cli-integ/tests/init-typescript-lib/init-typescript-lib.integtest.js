@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const lib_1 = require("../../lib");
+(0, lib_1.integTest)('typescript init lib', (0, lib_1.withTemporaryDirectory)((0, lib_1.withPackages)(async (context) => {
+    const shell = lib_1.ShellHelper.fromContext(context);
+    await context.packages.makeCliAvailable();
+    await shell.shell(['cdk', 'init', '-l', 'typescript', 'lib']);
+    await shell.shell(['npm', 'prune']);
+    await shell.shell(['npm', 'ls']); // this will fail if we have unmet peer dependencies
+    await shell.shell(['npm', 'run', 'build']);
+    await shell.shell(['npm', 'run', 'test']);
+})));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5pdC10eXBlc2NyaXB0LWxpYi5pbnRlZ3Rlc3QuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbml0LXR5cGVzY3JpcHQtbGliLmludGVndGVzdC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLG1DQUF5RjtBQUV6RixJQUFBLGVBQVMsRUFBQyxxQkFBcUIsRUFBRSxJQUFBLDRCQUFzQixFQUFDLElBQUEsa0JBQVksRUFBQyxLQUFLLEVBQUUsT0FBTyxFQUFFLEVBQUU7SUFDckYsTUFBTSxLQUFLLEdBQUcsaUJBQVcsQ0FBQyxXQUFXLENBQUMsT0FBTyxDQUFDLENBQUM7SUFDL0MsTUFBTSxPQUFPLENBQUMsUUFBUSxDQUFDLGdCQUFnQixFQUFFLENBQUM7SUFFMUMsTUFBTSxLQUFLLENBQUMsS0FBSyxDQUFDLENBQUMsS0FBSyxFQUFFLE1BQU0sRUFBRSxJQUFJLEVBQUUsWUFBWSxFQUFFLEtBQUssQ0FBQyxDQUFDLENBQUM7SUFFOUQsTUFBTSxLQUFLLENBQUMsS0FBSyxDQUFDLENBQUMsS0FBSyxFQUFFLE9BQU8sQ0FBQyxDQUFDLENBQUM7SUFDcEMsTUFBTSxLQUFLLENBQUMsS0FBSyxDQUFDLENBQUMsS0FBSyxFQUFFLElBQUksQ0FBQyxDQUFDLENBQUMsQ0FBQyxvREFBb0Q7SUFDdEYsTUFBTSxLQUFLLENBQUMsS0FBSyxDQUFDLENBQUMsS0FBSyxFQUFFLEtBQUssRUFBRSxPQUFPLENBQUMsQ0FBQyxDQUFDO0lBQzNDLE1BQU0sS0FBSyxDQUFDLEtBQUssQ0FBQyxDQUFDLEtBQUssRUFBRSxLQUFLLEVBQUUsTUFBTSxDQUFDLENBQUMsQ0FBQztBQUM1QyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBpbnRlZ1Rlc3QsIHdpdGhUZW1wb3JhcnlEaXJlY3RvcnksIFNoZWxsSGVscGVyLCB3aXRoUGFja2FnZXMgfSBmcm9tICcuLi8uLi9saWInO1xuXG5pbnRlZ1Rlc3QoJ3R5cGVzY3JpcHQgaW5pdCBsaWInLCB3aXRoVGVtcG9yYXJ5RGlyZWN0b3J5KHdpdGhQYWNrYWdlcyhhc3luYyAoY29udGV4dCkgPT4ge1xuICBjb25zdCBzaGVsbCA9IFNoZWxsSGVscGVyLmZyb21Db250ZXh0KGNvbnRleHQpO1xuICBhd2FpdCBjb250ZXh0LnBhY2thZ2VzLm1ha2VDbGlBdmFpbGFibGUoKTtcblxuICBhd2FpdCBzaGVsbC5zaGVsbChbJ2NkaycsICdpbml0JywgJy1sJywgJ3R5cGVzY3JpcHQnLCAnbGliJ10pO1xuXG4gIGF3YWl0IHNoZWxsLnNoZWxsKFsnbnBtJywgJ3BydW5lJ10pO1xuICBhd2FpdCBzaGVsbC5zaGVsbChbJ25wbScsICdscyddKTsgLy8gdGhpcyB3aWxsIGZhaWwgaWYgd2UgaGF2ZSB1bm1ldCBwZWVyIGRlcGVuZGVuY2llc1xuICBhd2FpdCBzaGVsbC5zaGVsbChbJ25wbScsICdydW4nLCAnYnVpbGQnXSk7XG4gIGF3YWl0IHNoZWxsLnNoZWxsKFsnbnBtJywgJ3J1bicsICd0ZXN0J10pO1xufSkpKTtcbiJdfQ==

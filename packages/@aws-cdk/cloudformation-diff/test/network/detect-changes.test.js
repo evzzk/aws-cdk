@@ -1,0 +1,77 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const lib_1 = require("../../lib");
+const util_1 = require("../util");
+test('detect addition of all types of rules', () => {
+    // WHEN
+    const diff = (0, lib_1.fullDiff)({}, (0, util_1.template)({
+        SG: (0, util_1.resource)('AWS::EC2::SecurityGroup', {
+            SecurityGroupIngress: [
+                {
+                    CidrIp: '1.2.3.4/8',
+                    FromPort: 80,
+                    ToPort: 80,
+                    IpProtocol: 'tcp',
+                },
+            ],
+            SecurityGroupEgress: [
+                {
+                    DestinationSecurityGroupId: { 'Fn::GetAtt': ['ThatOtherGroup', 'GroupId'] },
+                    FromPort: 80,
+                    ToPort: 80,
+                    IpProtocol: 'tcp',
+                },
+            ],
+        }),
+        InRule: (0, util_1.resource)('AWS::EC2::SecurityGroupIngress', {
+            GroupId: { 'Fn::GetAtt': ['SG', 'GroupId'] },
+            FromPort: -1,
+            ToPort: -1,
+            IpProtocol: 'icmp',
+            SourcePrefixListId: 'pl-1234',
+        }),
+        OutRule: (0, util_1.resource)('AWS::EC2::SecurityGroupEgress', {
+            GroupId: { 'Fn::GetAtt': ['SG', 'GroupId'] },
+            FromPort: -1,
+            ToPort: -1,
+            IpProtocol: 'udp',
+            CidrIp: '7.8.9.0/24',
+        }),
+    }));
+    // THEN
+    expect(diff.securityGroupChanges.toJson()).toEqual({
+        ingressRuleAdditions: [
+            {
+                groupId: '${SG.GroupId}',
+                ipProtocol: 'tcp',
+                fromPort: 80,
+                toPort: 80,
+                peer: { kind: 'cidr-ip', ip: '1.2.3.4/8' },
+            },
+            {
+                groupId: '${SG.GroupId}',
+                ipProtocol: 'icmp',
+                fromPort: -1,
+                toPort: -1,
+                peer: { kind: 'prefix-list', prefixListId: 'pl-1234' },
+            },
+        ],
+        egressRuleAdditions: [
+            {
+                groupId: '${SG.GroupId}',
+                ipProtocol: 'tcp',
+                fromPort: 80,
+                toPort: 80,
+                peer: { kind: 'security-group', securityGroupId: '${ThatOtherGroup.GroupId}' },
+            },
+            {
+                groupId: '${SG.GroupId}',
+                ipProtocol: 'udp',
+                fromPort: -1,
+                toPort: -1,
+                peer: { kind: 'cidr-ip', ip: '7.8.9.0/24' },
+            },
+        ],
+    });
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZGV0ZWN0LWNoYW5nZXMudGVzdC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImRldGVjdC1jaGFuZ2VzLnRlc3QudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSxtQ0FBcUM7QUFDckMsa0NBQTZDO0FBRTdDLElBQUksQ0FBQyx1Q0FBdUMsRUFBRSxHQUFHLEVBQUU7SUFDakQsT0FBTztJQUNQLE1BQU0sSUFBSSxHQUFHLElBQUEsY0FBUSxFQUFDLEVBQUUsRUFBRSxJQUFBLGVBQVEsRUFBQztRQUNqQyxFQUFFLEVBQUUsSUFBQSxlQUFRLEVBQUMseUJBQXlCLEVBQUU7WUFDdEMsb0JBQW9CLEVBQUU7Z0JBQ3BCO29CQUNFLE1BQU0sRUFBRSxXQUFXO29CQUNuQixRQUFRLEVBQUUsRUFBRTtvQkFDWixNQUFNLEVBQUUsRUFBRTtvQkFDVixVQUFVLEVBQUUsS0FBSztpQkFDbEI7YUFDRjtZQUNELG1CQUFtQixFQUFFO2dCQUNuQjtvQkFDRSwwQkFBMEIsRUFBRSxFQUFFLFlBQVksRUFBRSxDQUFDLGdCQUFnQixFQUFFLFNBQVMsQ0FBQyxFQUFFO29CQUMzRSxRQUFRLEVBQUUsRUFBRTtvQkFDWixNQUFNLEVBQUUsRUFBRTtvQkFDVixVQUFVLEVBQUUsS0FBSztpQkFDbEI7YUFDRjtTQUNGLENBQUM7UUFDRixNQUFNLEVBQUUsSUFBQSxlQUFRLEVBQUMsZ0NBQWdDLEVBQUU7WUFDakQsT0FBTyxFQUFFLEVBQUUsWUFBWSxFQUFFLENBQUMsSUFBSSxFQUFFLFNBQVMsQ0FBQyxFQUFFO1lBQzVDLFFBQVEsRUFBRSxDQUFDLENBQUM7WUFDWixNQUFNLEVBQUUsQ0FBQyxDQUFDO1lBQ1YsVUFBVSxFQUFFLE1BQU07WUFDbEIsa0JBQWtCLEVBQUUsU0FBUztTQUM5QixDQUFDO1FBQ0YsT0FBTyxFQUFFLElBQUEsZUFBUSxFQUFDLCtCQUErQixFQUFFO1lBQ2pELE9BQU8sRUFBRSxFQUFFLFlBQVksRUFBRSxDQUFDLElBQUksRUFBRSxTQUFTLENBQUMsRUFBRTtZQUM1QyxRQUFRLEVBQUUsQ0FBQyxDQUFDO1lBQ1osTUFBTSxFQUFFLENBQUMsQ0FBQztZQUNWLFVBQVUsRUFBRSxLQUFLO1lBQ2pCLE1BQU0sRUFBRSxZQUFZO1NBQ3JCLENBQUM7S0FDSCxDQUFDLENBQUMsQ0FBQztJQUVKLE9BQU87SUFDUCxNQUFNLENBQUMsSUFBSSxDQUFDLG9CQUFvQixDQUFDLE1BQU0sRUFBRSxDQUFDLENBQUMsT0FBTyxDQUFDO1FBQ2pELG9CQUFvQixFQUFFO1lBQ3BCO2dCQUNFLE9BQU8sRUFBRSxlQUFlO2dCQUN4QixVQUFVLEVBQUUsS0FBSztnQkFDakIsUUFBUSxFQUFFLEVBQUU7Z0JBQ1osTUFBTSxFQUFFLEVBQUU7Z0JBQ1YsSUFBSSxFQUFFLEVBQUUsSUFBSSxFQUFFLFNBQVMsRUFBRSxFQUFFLEVBQUUsV0FBVyxFQUFFO2FBQzNDO1lBQ0Q7Z0JBQ0UsT0FBTyxFQUFFLGVBQWU7Z0JBQ3hCLFVBQVUsRUFBRSxNQUFNO2dCQUNsQixRQUFRLEVBQUUsQ0FBQyxDQUFDO2dCQUNaLE1BQU0sRUFBRSxDQUFDLENBQUM7Z0JBQ1YsSUFBSSxFQUFFLEVBQUUsSUFBSSxFQUFFLGFBQWEsRUFBRSxZQUFZLEVBQUUsU0FBUyxFQUFFO2FBQ3ZEO1NBQ0Y7UUFDRCxtQkFBbUIsRUFBRTtZQUNuQjtnQkFDRSxPQUFPLEVBQUUsZUFBZTtnQkFDeEIsVUFBVSxFQUFFLEtBQUs7Z0JBQ2pCLFFBQVEsRUFBRSxFQUFFO2dCQUNaLE1BQU0sRUFBRSxFQUFFO2dCQUNWLElBQUksRUFBRSxFQUFFLElBQUksRUFBRSxnQkFBZ0IsRUFBRSxlQUFlLEVBQUUsMkJBQTJCLEVBQUU7YUFDL0U7WUFDRDtnQkFDRSxPQUFPLEVBQUUsZUFBZTtnQkFDeEIsVUFBVSxFQUFFLEtBQUs7Z0JBQ2pCLFFBQVEsRUFBRSxDQUFDLENBQUM7Z0JBQ1osTUFBTSxFQUFFLENBQUMsQ0FBQztnQkFDVixJQUFJLEVBQUUsRUFBRSxJQUFJLEVBQUUsU0FBUyxFQUFFLEVBQUUsRUFBRSxZQUFZLEVBQUU7YUFDNUM7U0FDRjtLQUNGLENBQUMsQ0FBQztBQUNMLENBQUMsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgZnVsbERpZmYgfSBmcm9tICcuLi8uLi9saWInO1xuaW1wb3J0IHsgcmVzb3VyY2UsIHRlbXBsYXRlIH0gZnJvbSAnLi4vdXRpbCc7XG5cbnRlc3QoJ2RldGVjdCBhZGRpdGlvbiBvZiBhbGwgdHlwZXMgb2YgcnVsZXMnLCAoKSA9PiB7XG4gIC8vIFdIRU5cbiAgY29uc3QgZGlmZiA9IGZ1bGxEaWZmKHt9LCB0ZW1wbGF0ZSh7XG4gICAgU0c6IHJlc291cmNlKCdBV1M6OkVDMjo6U2VjdXJpdHlHcm91cCcsIHtcbiAgICAgIFNlY3VyaXR5R3JvdXBJbmdyZXNzOiBbXG4gICAgICAgIHtcbiAgICAgICAgICBDaWRySXA6ICcxLjIuMy40LzgnLFxuICAgICAgICAgIEZyb21Qb3J0OiA4MCxcbiAgICAgICAgICBUb1BvcnQ6IDgwLFxuICAgICAgICAgIElwUHJvdG9jb2w6ICd0Y3AnLFxuICAgICAgICB9LFxuICAgICAgXSxcbiAgICAgIFNlY3VyaXR5R3JvdXBFZ3Jlc3M6IFtcbiAgICAgICAge1xuICAgICAgICAgIERlc3RpbmF0aW9uU2VjdXJpdHlHcm91cElkOiB7ICdGbjo6R2V0QXR0JzogWydUaGF0T3RoZXJHcm91cCcsICdHcm91cElkJ10gfSxcbiAgICAgICAgICBGcm9tUG9ydDogODAsXG4gICAgICAgICAgVG9Qb3J0OiA4MCxcbiAgICAgICAgICBJcFByb3RvY29sOiAndGNwJyxcbiAgICAgICAgfSxcbiAgICAgIF0sXG4gICAgfSksXG4gICAgSW5SdWxlOiByZXNvdXJjZSgnQVdTOjpFQzI6OlNlY3VyaXR5R3JvdXBJbmdyZXNzJywge1xuICAgICAgR3JvdXBJZDogeyAnRm46OkdldEF0dCc6IFsnU0cnLCAnR3JvdXBJZCddIH0sXG4gICAgICBGcm9tUG9ydDogLTEsXG4gICAgICBUb1BvcnQ6IC0xLFxuICAgICAgSXBQcm90b2NvbDogJ2ljbXAnLFxuICAgICAgU291cmNlUHJlZml4TGlzdElkOiAncGwtMTIzNCcsXG4gICAgfSksXG4gICAgT3V0UnVsZTogcmVzb3VyY2UoJ0FXUzo6RUMyOjpTZWN1cml0eUdyb3VwRWdyZXNzJywge1xuICAgICAgR3JvdXBJZDogeyAnRm46OkdldEF0dCc6IFsnU0cnLCAnR3JvdXBJZCddIH0sXG4gICAgICBGcm9tUG9ydDogLTEsXG4gICAgICBUb1BvcnQ6IC0xLFxuICAgICAgSXBQcm90b2NvbDogJ3VkcCcsXG4gICAgICBDaWRySXA6ICc3LjguOS4wLzI0JyxcbiAgICB9KSxcbiAgfSkpO1xuXG4gIC8vIFRIRU5cbiAgZXhwZWN0KGRpZmYuc2VjdXJpdHlHcm91cENoYW5nZXMudG9Kc29uKCkpLnRvRXF1YWwoe1xuICAgIGluZ3Jlc3NSdWxlQWRkaXRpb25zOiBbXG4gICAgICB7XG4gICAgICAgIGdyb3VwSWQ6ICcke1NHLkdyb3VwSWR9JyxcbiAgICAgICAgaXBQcm90b2NvbDogJ3RjcCcsXG4gICAgICAgIGZyb21Qb3J0OiA4MCxcbiAgICAgICAgdG9Qb3J0OiA4MCxcbiAgICAgICAgcGVlcjogeyBraW5kOiAnY2lkci1pcCcsIGlwOiAnMS4yLjMuNC84JyB9LFxuICAgICAgfSxcbiAgICAgIHtcbiAgICAgICAgZ3JvdXBJZDogJyR7U0cuR3JvdXBJZH0nLFxuICAgICAgICBpcFByb3RvY29sOiAnaWNtcCcsXG4gICAgICAgIGZyb21Qb3J0OiAtMSxcbiAgICAgICAgdG9Qb3J0OiAtMSxcbiAgICAgICAgcGVlcjogeyBraW5kOiAncHJlZml4LWxpc3QnLCBwcmVmaXhMaXN0SWQ6ICdwbC0xMjM0JyB9LFxuICAgICAgfSxcbiAgICBdLFxuICAgIGVncmVzc1J1bGVBZGRpdGlvbnM6IFtcbiAgICAgIHtcbiAgICAgICAgZ3JvdXBJZDogJyR7U0cuR3JvdXBJZH0nLFxuICAgICAgICBpcFByb3RvY29sOiAndGNwJyxcbiAgICAgICAgZnJvbVBvcnQ6IDgwLFxuICAgICAgICB0b1BvcnQ6IDgwLFxuICAgICAgICBwZWVyOiB7IGtpbmQ6ICdzZWN1cml0eS1ncm91cCcsIHNlY3VyaXR5R3JvdXBJZDogJyR7VGhhdE90aGVyR3JvdXAuR3JvdXBJZH0nIH0sXG4gICAgICB9LFxuICAgICAge1xuICAgICAgICBncm91cElkOiAnJHtTRy5Hcm91cElkfScsXG4gICAgICAgIGlwUHJvdG9jb2w6ICd1ZHAnLFxuICAgICAgICBmcm9tUG9ydDogLTEsXG4gICAgICAgIHRvUG9ydDogLTEsXG4gICAgICAgIHBlZXI6IHsga2luZDogJ2NpZHItaXAnLCBpcDogJzcuOC45LjAvMjQnIH0sXG4gICAgICB9LFxuICAgIF0sXG4gIH0pO1xufSk7XG4iXX0=
